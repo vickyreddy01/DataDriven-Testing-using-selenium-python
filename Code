@@ -1,0 +1,53 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+import csv
+
+driver = webdriver.Chrome()
+driver.maximize_window()
+
+
+def load_test_data(file_path):
+    test_data = []
+    with open(file_path, mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            test_data.append(row)
+    return test_data
+
+def login_test(username, password):
+    driver.get("https://rahulshettyacademy.com/loginpagePractise/")  # Replace with the actual login URL
+    time.sleep(2)  # Adjust based on loading time
+
+    # Locate username and password fields
+    username_field = driver.find_element(By.ID, "username")  # Adjust selectors as needed
+    password_field = driver.find_element(By.ID, "password")
+    login_button = driver.find_element(By.ID, "signInBtn")
+
+    username_field.clear()
+    username_field.send_keys(username)
+    password_field.clear()
+    password_field.send_keys(password)
+
+    # Submit login form
+    login_button.click()
+    time.sleep(2)  # Wait for login to process
+
+    # Check for successful login by asserting URL or other indicators
+    if "dashboard" in driver.current_url:
+        print(f"Login successful for {username}")
+    else:
+        print(f"Login failed for {username}")
+
+
+if __name__ == "__main__":
+    # Load test data
+    test_data = load_test_data("../RobotFramework/Data1/data.csv")
+
+    # Run tests for each row in CSV
+    for data in test_data:
+        username = data['username']
+        password = data['password']
+        login_test(username, password)
+
+    driver.quit()
